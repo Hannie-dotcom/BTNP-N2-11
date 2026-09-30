@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bài tập Ngữ pháp N2 - Bài 11 (Shinkanzen)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+        
+        body {
+            background: linear-gradient(rgba(255, 245, 247, 0.55), rgba(240, 220, 225, 0.65)),
+                        url('https://images.unsplash.com/photo-1522383225653-ed111181a951?q=80&w=1920&auto=format&fit=crop') center/cover no-repeat fixed;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        .sakura-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
+        .petal {
+            position: absolute;
+            background: #ffb7c5;
+            border-radius: 15px 0 15px 0;
+            opacity: 0.75;
+            filter: drop-shadow(0 2px 4px rgba(216, 90, 127, 0.2));
+            animation: fall linear infinite;
+        }
+        @keyframes fall {
+            0% { transform: translate(0, -10px) rotate(0deg); opacity: 0.8; }
+            100% { transform: translate(120px, 105vh) rotate(360deg); opacity: 0; }
+        }
+
+        .app-card {
+            position: relative;
+            z-index: 2;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            width: 100%;
+            max-width: 600px;
+            border-radius: 24px;
+            padding: 32px 28px;
+            border: 1.5px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 20px 40px rgba(180, 100, 120, 0.15);
+        }
+
+        .lesson-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #d85a7f;
+            margin-bottom: 6px;
+        }
+
+        .header { 
+            display: flex; 
+            justify-content: space-between; 
+            font-size: 14px; 
+            font-weight: 700; 
+            color: #b06d7e; 
+            margin-bottom: 20px; 
+            padding-bottom: 10px;
+            border-bottom: 1.5px solid #f2d5db;
+        }
+
+        .question-card {
+            background: #fff5f7;
+            border-left: 4px solid #d85a7f;
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .question-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #d85a7f;
+            margin-bottom: 8px;
+        }
+
+        .question-text { 
+            font-size: 18px; 
+            font-weight: 600; 
+            color: #3a2e30; 
+            line-height: 1.6;
+        }
+
+        .options-grid { display: flex; flex-direction: column; gap: 12px; }
+        
+        .opt-btn {
+            display: flex;
+            align-items: center;
+            background: #ffffff;
+            border: 1.5px solid #f2d5db;
+            color: #4a383b;
+            padding: 14px 18px;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+        }
+
+        .opt-btn::before {
+            content: '';
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 2px solid #b06d7e;
+            border-radius: 50%;
+            margin-right: 14px;
+            flex-shrink: 0;
+            transition: all 0.2s;
+        }
+
+        .opt-btn:hover { 
+            background: #fff0f3; 
+            border-color: #d85a7f; 
+            transform: translateY(-1px); 
+        }
+
+        .opt-btn.correct { 
+            background: #e8f5e9 !important; 
+            border-color: #66bb6a !important; 
+            color: #2e7d32 !important; 
+        }
+        .opt-btn.correct::before {
+            background: #4caf50;
+            border-color: #4caf50;
+            box-shadow: inset 0 0 0 3px #ffffff;
+        }
+
+        .opt-btn.wrong { 
+            background: #ffebee !important; 
+            border-color: #ef5350 !important; 
+            color: #c62828 !important; 
+        }
+        .opt-btn.wrong::before {
+            background: #ef5350;
+            border-color: #ef5350;
+            box-shadow: inset 0 0 0 3px #ffffff;
+        }
+
+        .feedback { 
+            display: none;
+            margin-top: 20px; 
+            font-size: 15px; 
+            text-align: left;
+        }
+
+        .result-status {
+            font-weight: 700;
+            font-size: 16px;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .explain-card {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1.5px solid #f2d5db;
+            border-radius: 16px;
+            padding: 16px;
+            line-height: 1.6;
+            color: #3a2e30;
+        }
+
+        .explain-item {
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .explain-item:last-child { margin-bottom: 0; }
+
+        .tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 700;
+            margin-right: 6px;
+            color: white;
+        }
+        .tag-grammar { background: #e07a9e; }
+        .tag-trans { background: #5c6bc0; }
+        .tag-meaning { background: #26a69a; }
+
+        .next-btn {
+            display: block;
+            width: 100%;
+            margin-top: 16px;
+            background: linear-gradient(135deg, #e07a9e 0%, #d85a7f 100%);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+        .next-btn:hover { opacity: 0.95; transform: translateY(-1px); }
+    </style>
+</head>
+<body>
+
+    <div class="sakura-container" id="sakura-box"></div>
+
+    <div class="app-card">
+        <div class="lesson-title">Bài 11 - N2 (Shinkanzen Master)</div>
+
+        <div class="header">
+            <span id="q-count">Câu 1 / 22</span>
+            <span id="score-count">Điểm: 0</span>
+        </div>
+
+        <div class="question-card">
+            <div class="question-title" id="q-type">Câu 1: Chọn đáp án đúng</div>
+            <div class="question-text" id="question-content"></div>
+        </div>
+
+        <div class="options-grid" id="quiz-box">
+            <button class="opt-btn" onclick="checkAnswer(0)"></button>
+            <button class="opt-btn" onclick="checkAnswer(1)"></button>
+            <button class="opt-btn" onclick="checkAnswer(2)"></button>
+        </div>
+
+        <div class="feedback" id="feedback">
+            <div class="result-status" id="result-status"></div>
+            <div class="explain-card">
+                <div class="explain-item"><span class="tag tag-grammar">Cấu trúc</span><span id="ex-grammar"></span></div>
+                <div class="explain-item"><span class="tag tag-meaning">Ý nghĩa</span><span id="ex-meaning"></span></div>
+                <div class="explain-item"><span class="tag tag-trans">Dịch câu</span><span id="ex-trans"></span></div>
+            </div>
+            <button class="next-btn" onclick="nextQuestion()">Câu tiếp theo ➔</button>
+        </div>
+    </div>
+
+    <script>
+        function createPetal() {
+            const box = document.getElementById('sakura-box');
+            const p = document.createElement('div');
+            p.classList.add('petal');
+            p.style.width = Math.random() * 8 + 8 + 'px';
+            p.style.height = Math.random() * 10 + 10 + 'px';
+            p.style.left = Math.random() * 100 + 'vw';
+            p.style.animationDuration = Math.random() * 4 + 6 + 's';
+            box.appendChild(p);
+            setTimeout(() => p.remove(), 10000);
+        }
+        setInterval(createPetal, 400);
+
+        // Toàn bộ 22 câu bài tập Shinkanzen N2 - Bài 11 (Trang 54 - 55)
+        const quizData = [
+            // Mục 1: ～を問わず
+            {
+                q: 'このスポーツクラブのデイタイム会員は、昼間なら ( ) を問わず施設を利用することができる。',
+                options: ['水曜日、木曜日', '週末', '曜日'],
+                answer: 2,
+                grammar: 'N (Danh từ mang tính phân loại/biến số) + を問わず',
+                meaning: 'Bất kể / Không phân biệt N (Đi với các từ biểu thị sự khác biệt, khoảng cách như 年齢, 性別, 曜日, 国籍...).',
+                trans: 'Thành viên ban ngày của câu lạc bộ thể thao này nếu là buổi ngày thì bất kể là thứ mấy cũng có thể sử dụng cơ sở vật chất.'
+            },
+            {
+                q: 'この仕事は ( ) を問わず、だれでもできます。',
+                options: ['給料', '経験の有無', '未成年'],
+                answer: 1,
+                grammar: 'N (Từ chỉ sự đối lập/có hay không) + を問わず',
+                meaning: 'Bất kể N (thường đi với cặp từ đối lập như 有無, 男女, 内外...).',
+                trans: 'Công việc này bất kể là có kinh nghiệm hay không thì ai cũng có thể làm được.'
+            },
+            {
+                q: 'このスポーツは年齢を問わず、( )。',
+                options: ['だれでも楽しめます', 'いつでも楽しめます', 'どこでも楽しめます'],
+                answer: 0,
+                grammar: 'N (年齢) を問わず + だれでも',
+                meaning: 'Bất kể tuổi tác nên phù hợp với đối tượng "bất kỳ ai" (だれでも).',
+                trans: 'Môn thể thao này bất kể tuổi tác thì ai cũng có thể tận hưởng được.'
+            },
+            {
+                q: 'わたしは季節を問わず、( )。',
+                options: ['特に冬山に登ることが好きだ', '山登りをすることが好きだ', 'どんな季節も好きだ'],
+                answer: 1,
+                grammar: 'N (季節) を問わず + Trạng thái/Sở thích chung',
+                meaning: 'Bất kể mùa nào cũng duy trì hành động/sở thích chung.',
+                trans: 'Bất kể mùa nào tôi cũng đều thích leo núi.'
+            },
+            // Mục 2: ～にかかわりなく・～にかかわらず
+            {
+                q: '父は ( ) にかかわらず、日曜日ごとにゴルフを楽しんでいます。',
+                options: ['年齢', '高齢', '天候'],
+                answer: 2,
+                grammar: 'N + にかかわらず',
+                meaning: 'Không liên quan đến / Bất chấp N (Thời tiết, khoảng cách...).',
+                trans: 'Bố tôi bất chấp thời tiết ra sao, Chủ nhật nào cũng tận hưởng việc chơi golf.'
+            },
+            {
+                q: 'ここにある商品は大きさにかかわらず、( )。',
+                options: ['どれでも500円です', '高いのも安いのもあります', 'どれがいいですか'],
+                answer: 0,
+                grammar: 'N + にかかわらず + Kết quả đồng nhất/như nhau',
+                meaning: 'Vế sau thể hiện sự đồng nhất không bị ảnh hưởng bởi biến số N.',
+                trans: 'Các mặt hàng ở đây không liên quan đến kích thước lớn nhỏ, cái nào cũng có giá 500 yên.'
+            },
+            {
+                q: '( ) にかかわりなく、年会費をお納めください。',
+                options: ['今度の旅行への不参加', '今度の旅行への参加、不参加', '今度の旅行への参加'],
+                answer: 1,
+                grammar: 'N1、N2 / 疑問詞か + にかかわりなく',
+                meaning: 'Dù có hay không có / Không liên quan đến việc A hay B.',
+                trans: 'Không liên quan đến việc có tham gia chuyến đi lần này hay không, xin vui lòng nộp phí hội viên hàng năm.'
+            },
+            // Mục 3: ～もかまわず
+            {
+                q: 'あの人は ( ) のもかまわず、公園で服を着替えている。',
+                options: ['人が見ている', 'あたりが暗い', '人がいない'],
+                answer: 0,
+                grammar: 'V-普通形 + のもかまわず / N + もかまわず',
+                meaning: 'Mặc kệ / Không thèm bận tâm đến... (Làm hành động gây ngạc nhiên/bất lịch sự).',
+                trans: 'Người đó mặc kệ mọi người đang nhìn, vẫn đang thay quần áo ở công viên.'
+            },
+            {
+                q: 'わたしが一人で仕事を片付けているのもかまわず、田中さんは先に ( )。',
+                options: ['帰ってください', '帰ってもいいですよ', '帰ってしまった'],
+                answer: 2,
+                grammar: '～もかまわず + V-てしまった (Hành động đã xảy ra)',
+                meaning: 'Vế sau là hành động thực tế đã xảy ra ngoài dự đoán, không đi với câu cầu khiến/cho phép.',
+                trans: 'Mặc kệ việc tôi đang một mình dọn dẹp công việc, anh Tanaka đã đi về trước mất rồi.'
+            },
+            {
+                q: '雨が降っているのもかまわず、選手たちは ( )。',
+                options: ['練習を続けている', '練習を続けましょう', '練習を続けろ'],
+                answer: 0,
+                grammar: '～もかまわず + Hành động thực tế',
+                meaning: 'Vế sau không dùng với câu thể hiện ý chí, kêu gọi hay ra lệnh.',
+                trans: 'Mặc kệ trời đang mưa, các tuyển thủ vẫn đang tiếp tục luyện tập.'
+            },
+            {
+                q: '天候が良くないのもかまわず、( )。',
+                options: ['ようこそおいでくださいました', '彼は釣りに出かけていった', 'どうしても出かけなければならない'],
+                answer: 1,
+                grammar: '～もかまわず + V (Hành động thực tế bất chấp)',
+                meaning: 'Diễn tả hành động bất chấp hoàn cảnh của ai đó.',
+                trans: 'Mặc kệ thời tiết không tốt, anh ấy vẫn đi ra ngoài câu cá.'
+            },
+            // Mục 4: ～はともかく（として）
+            {
+                q: '子供はともかく、( )。',
+                options: ['大人はちゃんとほかの人の話を聞くべきだ', 'だれもが連休を楽しみにしている', 'みんな寝ている顔がかわいい'],
+                answer: 0,
+                grammar: 'N + はともかく（として）',
+                meaning: 'Tạm thời chưa bàn đến A (vì B quan trọng hơn) -> Trẻ con chưa bàn tới, người lớn phải...',
+                trans: 'Trẻ con thì chưa bàn tới, người lớn nên lắng nghe đàng hoàng câu chuyện của người khác.'
+            },
+            {
+                q: '日本語を勉強するなら、漢字はともかく、ひらがなは ( )。',
+                options: ['日本で作られた字です', '48字だけです', '早く覚えたほうがいいです'],
+                answer: 2,
+                grammar: 'N + はともかく + Đề xuất/Khuyên bảo cho B',
+                meaning: 'Chữ Hán tạm thời chưa tính tới, Hiragana thì nên nhớ sớm.',
+                trans: 'Nếu học tiếng Nhật thì chữ Hán tạm thời chưa bàn tới, còn Hiragana thì nên nhớ càng sớm càng tốt.'
+            },
+            {
+                q: '( ) はともかくとして、会長の考えは筋が通っていると思う。',
+                options: ['賛成するかどうか', '賛成できないか', '賛成できない'],
+                answer: 0,
+                grammar: '疑問詞 / V-か + はともかく（として）',
+                meaning: 'Đi với thể nghi vấn か.',
+                trans: 'Tạm thời chưa bàn tới việc có tán thành hay không, tôi nghĩ suy nghĩ của Chủ tịch là hợp lý.'
+            },
+            {
+                q: '日本の夏は、暑いのはともかく、( )。',
+                options: ['わたしの国ほどではない', '湿度が高いので嫌だ', 'クーラーがあればいい'],
+                answer: 1,
+                grammar: 'A-い/N + のはともかく + Vấn đề bận tâm hơn ở vế B',
+                meaning: 'Chuyện nóng tạm thời gạt sang bên, việc độ ẩm cao mới là điều đáng ghét.',
+                trans: 'Mùa hè ở Nhật Bản thì việc nóng tạm thời chưa bàn tới, việc độ ẩm cao làm tôi rất ghét.'
+            },
+            {
+                q: '優勝できるかどうかはともかく、( )。',
+                options: ['精いっぱい頑張ろう', 'あまり気にしないほうがいい', '今はとても緊張している'],
+                answer: 0,
+                grammar: 'V-か + はともかく + Quyết tâm/Ý chí ở vế B',
+                meaning: 'Có vô địch được hay không tạm thời chưa tính, trước mắt cứ cố gắng hết sức.',
+                trans: 'Liệu có thể vô địch được hay không tạm thời chưa tính tới, hãy cùng cố gắng hết sức mình nào.'
+            },
+            // Mục 5: ～はさておき
+            {
+                q: '( ) はさておき、値段の安さが気に入った。',
+                options: ['品質', 'いい品質', '悪い品質'],
+                answer: 0,
+                grammar: 'N + はさておき',
+                meaning: 'Tạm gác A sang một bên để tập trung vào vấn đề quan trọng hơn B.',
+                trans: 'Chất lượng tạm thời gác sang một bên, tôi thích việc giá cả rẻ.'
+            },
+            {
+                q: 'スポーツ大会のプログラムはさておき、( )。',
+                options: ['日程を決めよう', '準備はすべて整った', 'わたしも参加したい'],
+                answer: 0,
+                grammar: 'N + はさておき + Ưu tiên làm B trước',
+                meaning: 'Vế B đề xuất việc quan trọng hơn cần làm trước.',
+                trans: 'Chương trình của đại hội thể thao tạm thời gác sang một bên, hãy cùng quyết định lịch trình trước đã.'
+            },
+            {
+                q: '料理の注文はさておき、( )。',
+                options: ['わたしたちはたくさん飲んだ', 'まず乾杯しましょう', 'まず何が食べたいですか'],
+                answer: 1,
+                grammar: 'N + はさておき + Ưu tiên hành động trước',
+                meaning: 'Gác việc gọi món sang bên, trước tiên hãy cụng ly đã.',
+                trans: 'Việc gọi món ăn tạm thời gác sang một bên, trước tiên chúng ta hãy cùng cụng ly nâng cốc đã.'
+            },
+            // Mục 1~5: Bài tập tổng hợp
+            {
+                q: '山田君は分野 ( )、いろいろな本を読んでいる。',
+                options: ['を問わず', 'もかまわず', 'はさておき'],
+                answer: 0,
+                grammar: 'N (分野) + を問わず',
+                meaning: 'Bất kể/Không phân biệt lĩnh vực nào.',
+                trans: 'Anh Yamada bất kể là lĩnh vực nào cũng đọc rất nhiều sách đa dạng.'
+            },
+            {
+                q: '子供は服が汚れるの ( )、泥遊びを続けている。',
+                options: ['を問わず', 'もかまわず', 'はともかく'],
+                answer: 1,
+                grammar: 'V-普通形 + のもかまわず',
+                meaning: 'Mặc kệ việc quần áo bị bẩn, vẫn tiếp tục chơi bùn.',
+                trans: 'Đứa trẻ mặc kệ việc quần áo bị bẩn, vẫn tiếp tục chơi đùa với bùn.'
+            },
+            {
+                q: 'お酒を飲むか飲まないか ( )、新年会の会費は全員7,000円です。',
+                options: ['もかまわず', 'はさておき', 'にかかわらず'],
+                answer: 2,
+                grammar: 'V-か V-ないか + にかかわらず',
+                meaning: 'Không liên quan đến việc có uống rượu hay không uống, phí vẫn vậy.',
+                trans: 'Không liên quan đến việc có uống rượu hay không uống, phí tiệc tất niên của tất cả mọi người đều là 7.000 yên.'
+            }
+        ];
+
+        let current = 0, score = 0, canClick = true;
+
+        function init() {
+            const item = quizData[current];
+            document.getElementById('q-count').innerText = `Câu ${current + 1} / ${quizData.length}`;
+            document.getElementById('score-count').innerText = `Điểm: ${score}`;
+            document.getElementById('q-type').innerText = `Câu ${current + 1}: Chọn đáp án đúng`;
+            document.getElementById('question-content').innerText = item.q;
+            document.getElementById('feedback').style.display = 'none';
+            canClick = true;
+
+            const btns = document.querySelectorAll('.opt-btn');
+            btns.forEach((btn, i) => {
+                btn.innerText = item.options[i];
+                btn.className = 'opt-btn';
+            });
+        }
+
+        function checkAnswer(selectedIndex) {
+            if(!canClick) return; 
+            canClick = false;
+
+            const item = quizData[current];
+            const btns = document.querySelectorAll('.opt-btn');
+            const statusEl = document.getElementById('result-status');
+
+            if(selectedIndex === item.answer) {
+                btns[selectedIndex].classList.add('correct'); 
+                score += 10;
+                statusEl.innerHTML = `<span style="color: #4caf50;">✓ 正解 (Chính xác!)</span>`;
+            } else {
+                btns[selectedIndex].classList.add('wrong');
+                btns[item.answer].classList.add('correct');
+                statusEl.innerHTML = `<span style="color: #ef5350;">✕ ざんねん (Đáp án đúng là: ${item.options[item.answer]})</span>`;
+            }
+
+            document.getElementById('ex-grammar').innerText = item.grammar;
+            document.getElementById('ex-meaning').innerText = item.meaning;
+            document.getElementById('ex-trans').innerText = item.trans;
+
+            document.getElementById('feedback').style.display = 'block';
+        }
+
+        function nextQuestion() {
+            current = (current + 1) % quizData.length;
+            init();
+        }
+
+        init();
+    </script>
+</body>
+</html>
